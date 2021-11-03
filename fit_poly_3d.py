@@ -176,18 +176,19 @@ def calc_derivatives( x_list, y_list, z_list, poly_coeff, n ) :
                    
 
 
-            
-         
-
-      
-
-# TODO : missing constant term !!!
-# polynomial fit : p(x,y) = A + Sum_i^n { a_i x_k^(n-i) y_k^i }
-#   A is a_(n+1)
-# data point D_k
-# Chi2 = Sum_k=0^N { (p(x_k,y_k) - D_k ) ^ 2 }
+# Chi2 = Sum_k=0^N { (p(x_k,y_k) - D_k ) ^ 2 }            
 def fit_poly( filename , options ) :
    (x_list,y_list,z_list) = read_text_file( filename, ncols=options.ncols )
+         
+   return fit_poly_base( x_list, y_list, z_list, options )
+   
+      
+################################################################################################################################################
+# Main fitting function :
+#   Input : lists of x , y , z values 
+################################################################################################################################################
+def fit_poly_base( x_list, y_list, z_list , options ) :
+   # (x_list,y_list,z_list) = read_text_file( filename, ncols=options.ncols )
    x_list_original = copy.copy(x_list)
    y_list_original = copy.copy(y_list)
    
@@ -372,6 +373,8 @@ def fit_poly( filename , options ) :
    
    # calculate and show derivatives :
    calc_derivatives( x_list, y_list, z_list, a, n )
+   
+   return True
 
 if __name__ == '__main__':
    filename = "mean_stokes_I_2axis_gleamcal.txt"
