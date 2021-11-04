@@ -54,6 +54,7 @@ def parse_options():
    parser.add_option('--image_size','--size',dest="image_size",default=8192, help="Image size [default %]",type="int")
    parser.add_option('--ncols','--n_columns','--num_columns',dest="ncols",default=10, help="Number of columns in a file [default %]",type="int")
    parser.add_option('--verb','--verbose','--debug_level',dest="verbose",default=0, help="Verbosity level [default %]",type="int")
+   parser.add_option('--no_files','--no_savefiles','--dont_save_files','--no_outputfiles',action="store_false",dest="save_files",default=True, help="Do not save results to text files just return then from the function [default %]")
    
    (options, args) = parser.parse_args()
 
@@ -124,6 +125,9 @@ def plot_scatter( filename , vmin=0.00, vmax=20.00 ) :
    plt.colorbar();  # show color scale   
    plt.show()
 
+########################################################################################################################################
+# Calculates polynomial value for list of points x,y using coefficients in poly_coeff (order of polynomial is n)
+########################################################################################################################################
 def calc_polynonial( x , y , poly_coeff, n ) :
    out_val = 0.00   
    n_params = len( poly_coeff )
@@ -142,6 +146,52 @@ def calc_polynonial( x , y , poly_coeff, n ) :
          
    return out_val
 
+########################################################################################################################################
+# RETURNS list of (a_pq,p,q) where a_pq is polynomial coefficient with power x^p*y^q
+########################################################################################################################################
+def get_polynonial( poly_coeff, n ) :
+   n_params = len( poly_coeff )
+   param_index = 0
+   out_list = []
+
+   for p in range(0,n+1) :   
+      # for q in range(0,p+1) : # q goes from 0 to p   
+      for q in range(0,n-p+1 ) :
+         if param_index >= n_params :
+            print("ERROR in code : trying to print parameter %d when there are only %d" % (param_index,n_params))
+            
+         # polynomial_string += (" %.8f x^%d y^%d + " % (a[param_index],p,q))   
+         a_list = [poly_coeff[param_index] , p , q]
+         
+         out_list.append( a_list )
+         
+         param_index += 1
+                  
+         
+   return out_list
+
+
+########################################################################################################################################
+# Calculates polynomial values using list of coefficients and exponents in the format as in the function get_polynonial
+########################################################################################################################################
+def calc_polynonial_list( x , y , poly_coeff ) :
+   out_val = 0.00   
+   n_params = len( poly_coeff )
+   
+   for param_index in range(0,n_params): 
+      a_pq = poly_coeff[param_index][0] # a_pq
+      p = poly_coeff[param_index][1]    # x^p
+      q = poly_coeff[param_index][2]    # x^q
+      
+      val = a_pq*(x**p)*(y**q)
+      out_val = out_val + val
+
+   return out_val
+
+
+########################################################################################################################################
+# calculate derivatives (to check if they are indeed = 0 )
+########################################################################################################################################
 def calc_derivatives( x_list, y_list, z_list, poly_coeff, n ) :      
    len_data = len(z_list)
    n_params = len( poly_coeff )
@@ -175,8 +225,10 @@ def calc_derivatives( x_list, y_list, z_list, poly_coeff, n ) :
          print("dChi2/da_%d%d = %.8f" % (p,q,deriv_value))
                    
 
-
+################################################################################################################################################
+# Wrapper function reading a specified text file and calling the main fitting function 
 # Chi2 = Sum_k=0^N { (p(x_k,y_k) - D_k ) ^ 2 }            
+################################################################################################################################################
 def fit_poly( filename , options ) :
    (x_list,y_list,z_list) = read_text_file( filename, ncols=options.ncols )
          
@@ -331,9 +383,14 @@ def fit_poly_base( x_list, y_list, z_list , options ) :
    ok = np.allclose(np.dot(lhs_eq, a), rhs)
    print("Solution ok = %s" % (ok))
 
-   outfile = ("fitted_vs_data_order%02d.txt" % n)
-   out_f = open(outfile,"w")
-   out_f.write("# X  Y  FIT   DATA  DATA-FIT\n")
+   out_f = None
+   if options.save_files :
+      outfile = ("fitted_vs_data_order%02d.txt" % n)   
+      out_f = open(outfile,"w")
+      out_f.write("# X  Y  FIT   DATA  DATA-FIT\n")
+   else :
+      print("WARNING : saving output files is not required")
+      
    print("\n\nFitted values:")
    chi2 = 0 
    for i in range(0,len_data) :
@@ -342,39 +399,48 @@ def fit_poly_base( x_list, y_list, z_list , options ) :
       if options.verbose > 0 :
          print("%.3f %.3f  %.8f  vs. %.8f" % (x_list[i],y_list[i],z_list[i],val))
       
-      line = "%.3f %.3f %.8f %.8f %.8f\n" % (x_list_original[i],y_list_original[i],val,z_list[i],(z_list[i]-val))
-      out_f.write( line )
+      if out_f is not None :
+         line = "%.3f %.3f %.8f %.8f %.8f\n" % (x_list_original[i],y_list_original[i],val,z_list[i],(z_list[i]-val))
+         out_f.write( line )
       
       chi2 += (val - z_list[i])**2 
    
    print("\n\nchi2 = %.8f\n" % chi2)
-   out_f.close()
+   if out_f is not None :
+      out_f.close()
 
-   print("Saving fitted surface")   
-   size = options.image_size
-   step = 10
-   outfile2 = ("fitted_order%02d.txt" % (n))
-   out_f = open(outfile2,"w")
-   out_f.write("# X  Y  FIT \n")
-   out_f.write("# X,Y steps %d pixels\n" % step)
-   for y in range(0,size,step) :
-      if options.verbose > 0 :
-         print("Progress y = %d" % (y))
-      for x in range(0,size,step) :
-         yp = ( y - y_c ) / y_c 
-         xp = ( x - x_c ) / x_c 
+   if options.save_files :
+      print("Saving fitted surface")   
+      size = options.image_size
+      step = 10
+   
+      outfile2 = ("fitted_order%02d.txt" % (n))
+      out_f = open(outfile2,"w")
+      out_f.write("# X  Y  FIT \n")
+      out_f.write("# X,Y steps %d pixels\n" % step)
+      for y in range(0,size,step) :
+         if options.verbose > 0 :
+            print("Progress y = %d" % (y))
+         for x in range(0,size,step) :
+            yp = ( y - y_c ) / y_c 
+            xp = ( x - x_c ) / x_c 
          
-         val = calc_polynonial( xp, yp, a , n )
-         line = "%.3f %.3f %.8f\n" % (x,y,val)
-         out_f.write( line )
+            val = calc_polynonial( xp, yp, a , n )
+            line = "%.3f %.3f %.8f\n" % (x,y,val)
+            out_f.write( line )
          
           
-   out_f.close()   
-   
+      out_f.close()   
+   else :
+      print("WARNING : saving output files is not required")
+
    # calculate and show derivatives :
    calc_derivatives( x_list, y_list, z_list, a, n )
+
+   # format coefficients into a list and return
+   coeff_out = get_polynonial( a, n )
    
-   return True
+   return (True,coeff_out,a)
 
 if __name__ == '__main__':
    filename = "mean_stokes_I_2axis_gleamcal.txt"
@@ -393,7 +459,7 @@ if __name__ == '__main__':
    print "#################################################################"
       
    # (x_list,y_list,z_list) = read_text_file( filename )
-   fit_poly( filename, options )
+   (fit_ok,polynomial_coeff_list,coeff_only_list) = fit_poly( filename, options )
      
 #   plot_scatter( filename , vmin=options.vmin, vmax=options.vmax )   
       
