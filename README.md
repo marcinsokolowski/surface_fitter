@@ -1,6 +1,6 @@
 # surface_fitter
 Developed by Marcin Sokolowski (marcin.sokolowski@curtin.edu.au) , version 1.00 , 2021-11
-Fits a surface represented by a polynomial of an arbitrary order by calculating derivative over each cofficient, equaling them to zero and forming as many equations as many parameters
+Fits a surface represented by a polynomial of an arbitrary order by calculating derivative over each coefficient, equalling them to zero and forming as many equations as many parameters
   
   Requirements :
      matplotlib
