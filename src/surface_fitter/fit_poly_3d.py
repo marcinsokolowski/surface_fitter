@@ -1,3 +1,4 @@
+from __future__ import print_function
 ########################################################################################################################
 #
 # Developed by Marcin Sokolowski (marcin.sokolowski@curtin.edu.au) , version 1.00 , 2021-11
@@ -88,7 +89,7 @@ def read_text_file( filename , verbose=0, ncols=10 ) :
             
       file.close()      
    else :
-      print "WARNING : empty or non-existing file %s" % (filename)
+      print("WARNING : empty or non-existing file %s" % (filename))
 
    print("READ %d values from file %s" % (len(x_list),filename))
    
@@ -449,14 +450,14 @@ if __name__ == '__main__':
 
    (options, args) = parse_options()
 
-   print "#################################################################"
-   print "PARAMETERS :"
-   print "#################################################################"
-   print "Input file  = %s" % (filename)
-   print "vmin - vmax = %.4f - %.4f" % (options.vmin,options.vmax)
-   print "Polynomial order = %d" % (options.polynomial_order)
-   print "N columns in input file = %d" % (options.ncols)
-   print "#################################################################"
+   print("#################################################################")
+   print("PARAMETERS :")
+   print("#################################################################")
+   print("Input file  = %s" % (filename))
+   print("vmin - vmax = %.4f - %.4f" % (options.vmin,options.vmax))
+   print("Polynomial order = %d" % (options.polynomial_order))
+   print("N columns in input file = %d" % (options.ncols))
+   print("#################################################################")
       
    # (x_list,y_list,z_list) = read_text_file( filename )
    (fit_ok,polynomial_coeff_list,coeff_only_list) = fit_poly( filename, options )

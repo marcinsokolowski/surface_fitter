@@ -1,3 +1,4 @@
+from __future__ import print_function
 from . import fit_poly_3d 
 
 def hi(name: str):

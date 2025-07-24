@@ -1,3 +1,4 @@
+from __future__ import print_function
 ########################################################################################################################
 #
 # Developed by Marcin Sokolowski (marcin.sokolowski@curtin.edu.au) , version 1.00 , 2021-11
@@ -61,7 +62,7 @@ def read_text_file( filename , ncols=10 , plotcol=2 , min_val=-1e20, max_val=1e2
             
       file.close()      
    else :
-      print "WARNING : empty or non-existing file %s" % (filename)
+      print("WARNING : empty or non-existing file %s" % (filename))
 
    print("READ %d values from file %s" % (len(x_list),filename))
    

@@ -1,3 +1,4 @@
+from __future__ import print_function
 ########################################################################################################################
 #
 # Developed by Marcin Sokolowski (marcin.sokolowski@curtin.edu.au) , version 1.00 , 2021-11
@@ -18,5 +19,5 @@ if __name__ == '__main__':
          yp = float(y-yc)/yc
          
          val = 2.0*xp**3 + 1.0*(xp**2)*(yp) + 3.0*(xp)*(yp**2) + 4*xp*yp + 3*xp + yp + 10
-         print "%.4f %.4f %.8f" % (x,y,val)
+         print("%.4f %.4f %.8f" % (x,y,val))
 
