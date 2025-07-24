@@ -68,7 +68,7 @@ def read_text_file( filename , ncols=10 , plotcol=2 , min_val=-1e20, max_val=1e2
    
    return (x_list,y_list,calconst_list)
 
-def plot_scatter( filename , ncols , plotcol=3 , vmin=0, vmax=20 ) :   
+def plot_scatter( filename , ncols , plotcol=2, vmin=0, vmax=20 ) :   
    (x_list,y_list,calconst_list) = read_text_file( filename , ncols=ncols, plotcol=plotcol, min_val=vmin, max_val=vmax )
    # rng = np.random.RandomState(0)
    x = x_list # rng.randn(100)
