@@ -15,7 +15,7 @@ import re
 
 import matplotlib as m
 import matplotlib.pyplot as plt
-plt.style.use('seaborn-whitegrid')
+plt.style.use('seaborn-v0_8-whitegrid') # in python2 was : seaborn-whitegrid')
 
 def parse_options():
    usage="Usage: %prog [options]\n"

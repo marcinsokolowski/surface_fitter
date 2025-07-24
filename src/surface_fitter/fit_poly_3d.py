@@ -43,7 +43,7 @@ import re
 
 import matplotlib as m
 import matplotlib.pyplot as plt
-plt.style.use('seaborn-whitegrid')
+plt.style.use('seaborn-v0_8-whitegrid') # in python2 was : seaborn-whitegrid')
 
 def parse_options():
    usage="Usage: %prog [options]\n"
@@ -230,28 +230,29 @@ def calc_derivatives( x_list, y_list, z_list, poly_coeff, n ) :
 # Wrapper function reading a specified text file and calling the main fitting function 
 # Chi2 = Sum_k=0^N { (p(x_k,y_k) - D_k ) ^ 2 }            
 ################################################################################################################################################
-def fit_poly( filename , options ) :
-   (x_list,y_list,z_list) = read_text_file( filename, ncols=options.ncols )
+def fit_poly( filename , ncols=10, image_size=8192, polynomial_order=7, save_files=True, verbose=0 ) :
+   (x_list,y_list,z_list) = read_text_file( filename, ncols=ncols )
+   print("Read %d data points from file %s" % (len(x_list),filename))
          
-   return fit_poly_base( x_list, y_list, z_list, options )
+   return fit_poly_base( x_list, y_list, z_list, image_size=image_size, polynomial_order=polynomial_order, save_files=save_files, verbose=verbose )
    
       
 ################################################################################################################################################
 # Main fitting function :
 #   Input : lists of x , y , z values 
 ################################################################################################################################################
-def fit_poly_base( x_list, y_list, z_list , options ) :
+def fit_poly_base( x_list, y_list, z_list , image_size=8192, polynomial_order=7, save_files=True, verbose=0 ) :
    # (x_list,y_list,z_list) = read_text_file( filename, ncols=options.ncols )
    x_list_original = copy.copy(x_list)
    y_list_original = copy.copy(y_list)
    
    
-   image_size_x = options.image_size
-   image_size_y = options.image_size
+   image_size_x = image_size
+   image_size_y = image_size
    x_c = image_size_x / 2.00
    y_c = image_size_y / 2.00
 
-   if options.image_size is None or options.image_size <= 0 :
+   if image_size is None or image_size <= 0 :
       image_size_x = max(x_list) 
       image_size_y = max(y_list)
 
@@ -266,9 +267,9 @@ def fit_poly_base( x_list, y_list, z_list , options ) :
       x_list[i] = ( x_list[i] - x_c ) / ( x_c )
       y_list[i] = ( y_list[i] - y_c ) / ( y_c )
    
-   print("Read %d data points from file %s" % (len_data,filename))
+   print("Fitting 3D surface to %d data points" % (len_data))
    
-   n = options.polynomial_order   
+   n = polynomial_order   
    n_equations = 0 
    n_params = 0
    for p in range(0,n+1) :   
@@ -385,7 +386,7 @@ def fit_poly_base( x_list, y_list, z_list , options ) :
    print("Solution ok = %s" % (ok))
 
    out_f = None
-   if options.save_files :
+   if save_files :
       outfile = ("fitted_vs_data_order%02d.txt" % n)   
       out_f = open(outfile,"w")
       out_f.write("# X  Y  FIT   DATA  DATA-FIT\n")
@@ -397,7 +398,7 @@ def fit_poly_base( x_list, y_list, z_list , options ) :
    for i in range(0,len_data) :
       # calc_polynonial
       val = calc_polynonial( x_list[i] , y_list[i] , a, n )
-      if options.verbose > 0 :
+      if verbose > 0 :
          print("%.3f %.3f  %.8f  vs. %.8f" % (x_list[i],y_list[i],z_list[i],val))
       
       if out_f is not None :
@@ -410,9 +411,9 @@ def fit_poly_base( x_list, y_list, z_list , options ) :
    if out_f is not None :
       out_f.close()
 
-   if options.save_files :
+   if save_files :
       print("Saving fitted surface")   
-      size = options.image_size
+      size = image_size
       step = 10
    
       outfile2 = ("fitted_order%02d.txt" % (n))
@@ -420,7 +421,7 @@ def fit_poly_base( x_list, y_list, z_list , options ) :
       out_f.write("# X  Y  FIT \n")
       out_f.write("# X,Y steps %d pixels\n" % step)
       for y in range(0,size,step) :
-         if options.verbose > 0 :
+         if verbose > 0 :
             print("Progress y = %d" % (y))
          for x in range(0,size,step) :
             yp = ( y - y_c ) / y_c 
@@ -460,7 +461,7 @@ if __name__ == '__main__':
    print("#################################################################")
       
    # (x_list,y_list,z_list) = read_text_file( filename )
-   (fit_ok,polynomial_coeff_list,coeff_only_list) = fit_poly( filename, options )
+   (fit_ok,polynomial_coeff_list,coeff_only_list) = fit_poly( filename, ncols=options.ncols, image_size=options.image_size, polynomial_order=options.polynomial_order, save_files=options.save_files, verbose=options.verbose )
      
 #   plot_scatter( filename , vmin=options.vmin, vmax=options.vmax )   
       
