@@ -37,7 +37,7 @@ def parse_options():
 
 #  X   Y   RA_image[deg]    DEC_image[deg]  Flux_image[Jy]   RA_gleam[deg]    DEC_gleam[deg]    Flux_gleam[Jy]   AngDist[arcsec]    CalConst
 # 16   2930   284.3990    -23.1885    0.023    284.3999    -23.1880    0.569    3.40    24.60445805 
-def read_text_file( filename , ncols=10 , plotcol=2 , min_val=-1e20, max_val=1e20 ) :
+def read_text_file( filename , ncols=10 , plotcol=2 , min_val=-1e20, max_val=1e20, verbose=0 ) :
    x_list = []
    y_list = []
    calconst_list = []
@@ -49,8 +49,9 @@ def read_text_file( filename , ncols=10 , plotcol=2 , min_val=-1e20, max_val=1e2
          if line[0] != "#" :
 #            words = line.split(' ')
             words = re.split( '\s+' , line )
-         
-            print("DEBUG : line = %s -> |%s|%s|" % (line,words[0+0],words[1+0]))
+
+            if verbose > 0 :         
+               print("DEBUG : line = %s -> |%s|%s|" % (line,words[0+0],words[1+0]))
             x = float(words[0+0])
             y = float(words[1+0])
             calconst = float(words[plotcol+0])
@@ -68,8 +69,8 @@ def read_text_file( filename , ncols=10 , plotcol=2 , min_val=-1e20, max_val=1e2
    
    return (x_list,y_list,calconst_list)
 
-def plot_scatter( filename , ncols=5, plotcol=2, vmin=0, vmax=20 ) :   
-   (x_list,y_list,calconst_list) = read_text_file( filename , ncols=ncols, plotcol=plotcol, min_val=vmin, max_val=vmax )
+def plot_scatter( filename , ncols=5, plotcol=2, vmin=0, vmax=20, verbose=0 ) :   
+   (x_list,y_list,calconst_list) = read_text_file( filename , ncols=ncols, plotcol=plotcol, min_val=vmin, max_val=vmax, verbose=verbose )
    # rng = np.random.RandomState(0)
    x = x_list # rng.randn(100)
    y = y_list # rng.randn(100)
