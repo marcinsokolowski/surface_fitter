@@ -10,6 +10,7 @@ Fits a surface represented by a polynomial of an arbitrary order by calculating 
 
 # Installation with pip and test:
      # pip install surface-fitter
+     # Test version : pip install -i https://test.pypi.org/simple/ surface-fitter
      # pip install numpy scipy matplotlib
      
      # test:
