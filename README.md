@@ -1,5 +1,5 @@
 # surface_fitter
-Developed by Marcin Sokolowski (marcin.sokolowski@curtin.edu.au) , version 1.00 , 2021-11
+Developed by Marcin Sokolowski (marcinsokolastro@gmail.com) , version 0.1x, 2025-07
 Fits a surface represented by a polynomial of an arbitrary order by calculating derivative over each coefficient, equalling them to zero and forming as many equations as many parameters
   
   Requirements :
@@ -7,7 +7,19 @@ Fits a surface represented by a polynomial of an arbitrary order by calculating 
      scipy
      numpy
 
-  Example usage and test :
+
+# Installation with pip and test:
+     # pip install surface-fitter
+     # pip install numpy scipy matplotlib
+     
+     # test:
+     python
+     import surface_fitter
+     surface_fitter.generate_data("test.txt")
+     surface_fitter.fit_poly("test.txt",polynomial_order=3)
+     surface_fitter.plot_scatter("fitted_order03.txt",verbose=1)   
+
+# Example usage and test when source code is used (not pip) :
 
      # generates points from surface : val = 2.0*xp**3 + 1.0*(xp**2)*(yp) + 3.0*(xp)*(yp**2) + 4*xp*yp + 3*xp + yp + 10 
      python ./surface_generator.py > test.txt

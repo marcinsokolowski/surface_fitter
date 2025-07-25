@@ -1,3 +1,5 @@
 [project]
 name = "surface_fitter"
-version = "0.1"
+version = "0.16"
+description = "Least-square fitting of 3D surface to data points in text file"
+readme = "README.md" # Link your README file here
